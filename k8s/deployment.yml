@@ -1,0 +1,44 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: restapi
+  namespace: devops
+  labels:
+    app: restapi
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: restapi
+  template:
+    metadata:
+      labels:
+        app: restapi
+    spec:
+      securityContext:
+        fsGroup: 65534
+        runAsUser: 65534
+      serviceAccountName: restapi-serviceaccount
+      nodeSelector:
+        app: restapi
+      containers:
+      - name:  restapi
+        image: haydercyber/devops:restapi
+        imagePullPolicy: Always
+        securityContext:
+          capabilities:
+            add:
+            - NET_RAW
+        resources:
+          requests:
+            memory: "64Mi"
+            cpu: "250m"
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        readinessProbe:
+          httpGet:
+            path: /healthcheck
+            port: 9098
+          initialDelaySeconds: 3
+          periodSeconds: 3
