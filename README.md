@@ -86,6 +86,10 @@ when we push to master branch it will be run this script inside ``restapi`` runn
 
 * CI/CD VIEDO
 <a href="https://drive.google.com/file/d/163ULWL1GpvD51WVxzLx7G1AiXb_1ZBYB/view?usp=sharing"><img src="https://drive.google.com/file/d/163ULWL1GpvD51WVxzLx7G1AiXb_1ZBYB/view?usp=sharing" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
+ 
+ 
+ 
+ 
 * you can check here simple ansible rules ``ansible dir `` that will configure cluster for k8s 
 * install k8s in hard-way [k8s-hard-way](https://lnkd.in/d5ruPG4R) 
 
