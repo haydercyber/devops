@@ -104,7 +104,7 @@ Everything Is AWESOME
 We are sourcing the thumbnail image directly from YouTube and linking to the actual video, so when the person clicks the image/thumbnail they will be taken to the video.
 
 Code:
-[![CHECK CI/CD VIDEO](https://drive.google.com/file/d/163ULWL1GpvD51WVxzLx7G1AiXb_1ZBYB/view?usp=sharing)](![image](https://user-images.githubusercontent.com/36665347/159188858-1675f673-9fcc-46c8-92f8-1cec303bffcf.png) "CHECK CI/CD VIDEO")
+[![CHECK CI/CD VIDEO]<a href="https://drive.google.com/file/d/163ULWL1GpvD51WVxzLx7G1AiXb_1ZBYB/view?usp=sharing"><img src="https://drive.google.com/file/d/163ULWL1GpvD51WVxzLx7G1AiXb_1ZBYB/view?usp=sharing" style="width: 650px; max-width: 100%; height: auto" title="Click to enlarge picture" />
 * you can check here simple ansible rules ``ansible dir `` that will configure cluster for k8s 
 * install k8s in hard-way [k8s-hard-way](https://lnkd.in/d5ruPG4R) 
 
