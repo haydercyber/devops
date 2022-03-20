@@ -24,6 +24,7 @@ containers.
 > Create helm chart that content all yaml manifest template 
 * [helm](helm/helm.md)
 
+* you can check here simple ansible rules ``ansible dir `` that will configure cluster for k8s 
 # Smoke test 
 > will create ci/cd with gitlab ci/cd i have 
 * install gitlab-runner 
@@ -90,6 +91,6 @@ when we push to master branch it will be run this script inside ``restapi`` runn
  
  
  
-* you can check here simple ansible rules ``ansible dir `` that will configure cluster for k8s 
+
 * install k8s in hard-way [k8s-hard-way](https://lnkd.in/d5ruPG4R) 
 
