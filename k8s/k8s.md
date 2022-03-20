@@ -453,4 +453,4 @@ lets apply it to see it work
 OK
 ```
 its work  
-NEXT: [helm]()
+NEXT: [helm](../helm/helm.md)
