@@ -83,7 +83,28 @@ EOF
 ```
 when we push to master branch it will be run this script inside ``restapi`` runner 
 
+Complete Example
+Expanding on @MGA's Answer
 
+While it's not possible to embed a video in Markdown you can "fake it" by including a valid linked image in your markup file, using this format:
+
+[![IMAGE ALT TEXT](http://img.youtube.com/vi/YOUTUBE_VIDEO_ID_HERE/0.jpg)](http://www.youtube.com/watch?v=YOUTUBE_VIDEO_ID_HERE "Video Title")
+
+Explanation of the Markdown
+If this markup snippet looks complicated, break it down into two parts:
+
+an image
+![image alt text](https://example.com/link-to-image)
+wrapped in a link
+[link text](https://example.com/my-link "link title")
+
+Example using Valid Markdown and YouTube Thumbnail:
+Everything Is AWESOME
+
+We are sourcing the thumbnail image directly from YouTube and linking to the actual video, so when the person clicks the image/thumbnail they will be taken to the video.
+
+Code:
+[![CHECK CI/CD VIDEO](https://drive.google.com/file/d/163ULWL1GpvD51WVxzLx7G1AiXb_1ZBYB/view?usp=sharing)](![image](https://user-images.githubusercontent.com/36665347/159188858-1675f673-9fcc-46c8-92f8-1cec303bffcf.png) "CHECK CI/CD VIDEO")
 * you can check here simple ansible rules ``ansible dir `` that will configure cluster for k8s 
 * install k8s in hard-way [k8s-hard-way](https://lnkd.in/d5ruPG4R) 
 
