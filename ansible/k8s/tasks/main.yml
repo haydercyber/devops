@@ -1,0 +1,14 @@
+---
+# tasks file for k8s
+- name: import repo
+  import_tasks: repo.yml
+- name: import user 
+  import_tasks: user.yml 
+- name: import system install 
+  import_tasks: system.yml
+- name: import ha settings 
+  import_tasks: ha.yml 
+- name: master init 
+  import_tasks: kubemaster.yml
+- name: joun worker and nodes 
+  import_tasks: joun.yml

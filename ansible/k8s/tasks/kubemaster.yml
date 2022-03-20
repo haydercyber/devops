@@ -1,0 +1,71 @@
+    - name: initialize the cluster
+      shell: kubeadm init --control-plane-endpoint "vip-k8s-master:8443" --upload-certs
+      args:
+        chdir: $HOME
+        creates: cluster_initialized.txt
+      when: inventory_hostname in groups['k8smaster1']
+      tags: k8smaster
+
+    - name: create .kube directory
+      become: yes
+      become_user: kube
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+      when: inventory_hostname in groups['k8smaster1']
+      tags: k8smaster
+    
+    - name: copies admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kube/.kube/config
+        remote_src: yes
+        owner: kube
+      when: inventory_hostname in groups['k8smaster1']
+      tags: kubeconfig
+    - name: create token directory
+      become: yes
+      file:
+        path: $HOME/token
+        state: directory
+        mode: 0755
+      when: inventory_hostname in groups['k8smaster1']
+      tags:
+        - token
+        - dir
+
+    - name: install Pod network
+      become: yes
+      become_user: kube
+      shell: kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml 
+      args:
+        chdir: $HOME
+      when: inventory_hostname in groups['k8smaster1']
+      tags: 
+        - k8smaster
+        - net
+    - name: Get the token for joining workernode and masters node 
+      become: yes
+      script:  /root/devops/ansible/roles/k8s/files/token.sh
+      tags: 
+        - token
+        - k8smaster
+      when: inventory_hostname in groups['k8smaster1']
+    - name: copy file to local  for workernode
+      fetch:
+        src: /root/token/kubernetes_join_command
+        dest: /root/devops/ansible/roles/k8s/files/
+      when: inventory_hostname in groups['k8smaster1']
+      tags: 
+        - token
+        - k8smaster
+    - name: copy file to local  for master
+      fetch:
+        src: /root/token/kubernetes_join_master
+        dest: /root/devops/ansible/roles/k8s/files/
+      when: inventory_hostname in groups['k8smaster1']
+      tags: 
+        - token
+        - k8smaster
+   

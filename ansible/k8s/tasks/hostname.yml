@@ -1,0 +1,16 @@
+    - name: copy hosts file 
+      copy:
+        remote_src: no
+        src: /root/devops/ansible/roles/k8s/files/hosts
+        dest: /etc/hosts 
+    - name: change the hostname of kubemaster 
+      shell: hostnamectl set-hostname k8s-master-1
+      when: inventory_hostname in groups['k8smaster1']
+    - name: change the hostname of k8smaster2
+      shell: hostnamectl set-hostname k8s-master-2
+      when: inventory_hostname in groups['k8smaster2']
+    - name: change the hostname of k8s-worker-1
+      shell: hostnamectl set-hostname k8s-worker-1
+      when: inventory_hostname in groups['k8sworker1']
+
+  

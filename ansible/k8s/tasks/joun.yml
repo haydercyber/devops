@@ -1,0 +1,28 @@
+    - name: joun master node 
+      become: yes
+      script: master/root/token/kubernetes_join_master
+      tags: token 
+      when: inventory_hostname in groups['k8smaster2']
+    - name: create .kube directory
+      become: yes
+      become_user: kube
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+      when: inventory_hostname in groups['k8smaster2']
+      tags: dod
+    - name: copies admin.conf to user's kube config
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/kube/.kube/config
+        remote_src: yes
+        owner: kube
+      tags: dod
+      when: inventory_hostname in groups['k8smaster2']
+    - name: joun workernode 
+      become: yes
+      script: master/root/token/kubernetes_join_command
+      tags: token 
+      when: inventory_hostname in groups['workers']
+

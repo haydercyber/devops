@@ -1,0 +1,15 @@
+- hosts:  k8smaster1
+  become: yes
+  become_user: kube
+  tasks: 
+    - name: create token for master node to join
+      shell: |
+              kubeadm token create  --print-join-command > /home/kube/kubernetes_join_command
+              cat /home/kube/kubernetes_join_command > /home/kube/kubernetes_join_master
+              kubeadm init phase upload-certs --upload-certs >> /home/kube/kubernetes_join_master
+              sed -i '2,3d' /home/kube/kubernetes_join_master
+              sed  '$i --control-plane --certificate-key' /home/kube/kubernetes_join_master  >> /home/kube/kubernetes_join_master
+              sed -i '1,2d' /home/kube/kubernetes_join_master
+              awk  </home/kube/kubernetes_join_master 'BEGIN { RS = "" ; FS = "\n" } { gsub(/\n/, " ", $0) ; print }' >> /home/kube/kubernetes_join_master
+              sed -i '1,2d' /home/kube/kubernetes_join_master
+              sed -i '1d'  /home/kube/kubernetes_join_master

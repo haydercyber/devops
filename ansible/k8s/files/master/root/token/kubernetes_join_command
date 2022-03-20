@@ -1,0 +1,1 @@
+kubeadm join vip-k8s-master:8443 --token wotkqh.8rd5d49wmtanotag --discovery-token-ca-cert-hash sha256:5f217245e65812f213b723a6941fc7b6d562390ecb0edde41e20f7915e1484ea 

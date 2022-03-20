@@ -1,0 +1,9 @@
+kubeadm token create  --print-join-command > kubernetes_join_command
+cat kubernetes_join_command > kubernetes_join_master
+kubeadm init phase upload-certs --upload-certs >> kubernetes_join_master
+sed -i '2,3d' kubernetes_join_master
+sed  '$i --control-plane --certificate-key' kubernetes_join_master  >> kubernetes_join_master
+sed -i '1,2d' kubernetes_join_master
+awk  <kubernetes_join_master 'BEGIN { RS = "" ; FS = "\n" } { gsub(/\n/, " ", $0) ; print }' >> kubernetes_join_master
+sed -i '1,2d' kubernetes_join_master
+sed -i '1d'  kubernetes_join_master

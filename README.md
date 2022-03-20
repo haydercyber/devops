@@ -25,5 +25,65 @@ containers.
 * [helm](helm/helm.md)
 
 # Smoke test 
-> will create ci/cd with gitlab ci/cd i have s 
+> will create ci/cd with gitlab ci/cd i have 
+* install gitlab-runner 
+* create gitlab-ci.yml 
+* and do some change on src code thein push and see if it change or not 
+
+
+> install gitlab-runner 
+```
+# curl -L "https://packages.gitlab.com/install/repositories/runner/gitlab-runner/script.rpm.sh" | sudo bash
+# yum install  gitlab-runner
+```
+> register gitlab-runner to the project 
+```
+
+# useradd --comment 'GitLab Runner' --create-home gitlab-runner --shell /bin/bash
+# gitlab-runner install --user=gitlab-runner --working-directory=/home/gitlab-runner
+# gitlab-runner register --url https://gitlab.com/ --registration-token sfsfsfs
+```
+``output``
+```
+[https://gitlab.com/]:
+Enter the registration token:
+[iCZKx9_67pizs8kiqvR4]:
+Enter a description for the runner:
+[gitlabtest]:
+Enter tags for the runner (comma-separated):
+restapi
+Registering runner... succeeded                     runner=iCZKx9_6
+Enter an executor: virtualbox, docker+machine, docker-ssh+machine, custom, docker-ssh, shell, ssh, docker, parallels, kubernetes:
+shell
+Runner registered successfully. Feel free to start it, but if it's running already the config should be automatically reloaded!
+```
+now lets create simple gitlab-ci file 
+
+```
+#  cat << EOF |  tee .gitlab-ci.yml 
+stages:
+  - deploy 
+Deploy.restapi: 
+  stage: deploy
+  only: 
+    - master
+  tags:
+    - restapi
+  before_script:
+    - podman build -t restapi .
+    - podman tag localhost/restapi:latest haydercyber/devops:$CI_PIPELINE_IID
+    - podman push haydercyber/devops:$CI_PIPELINE_IID
+  script:
+    - helm upgrade --set deployment.image=haydercyber/devops:restapi  --set deployment.image=docker.io/haydercyber/devops:$CI_PIPELINE_IID demo helm
+    - sleep 30s && cd 
+  after_script:
+    - curl -v restapi.helm.com/healthcheck
+    - rm -rf /root/builds
+EOF
+```
+when we push to master branch it will be run this script inside ``restapi`` runner 
+
+
+* you can check here simple ansible rules ``ansible dir `` that will configure cluster for k8s 
+* install k8s in hard-way [k8s-hard-way](https://lnkd.in/d5ruPG4R) 
 

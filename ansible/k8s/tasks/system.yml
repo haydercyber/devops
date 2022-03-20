@@ -1,0 +1,113 @@
+    - name: Update the OS
+      shell: yum update -y
+    - name: copy hosts file 
+      copy:
+        remote_src: no
+        src: /root/devops/ansible/roles/k8s/files/hosts
+        dest: /etc/hosts 
+    - name: disable swap
+      shell: | 
+              sudo swapoff -a
+              sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+    - name : create a iptables file 
+      file: 
+        path: "/etc/modules-load.d/k8s.conf"
+        state: "touch"
+    - name: letting ipTables see bridged networks
+      blockinfile: 
+        path: "/etc/modules-load.d/k8s.conf"
+        block: | 
+                br_netfilter
+
+    - name: Set system configurations for Kubernetes ip6tables
+      file: 
+        path: "/etc/sysctl.d/k8s.conf"
+        state: "touch"
+    - name: update  ipTables config
+      blockinfile:
+        path: "/etc/sysctl.d/k8s.conf"
+        block: | 
+              net.bridge.bridge-nf-call-ip6tables = 1
+              net.bridge.bridge-nf-call-iptables = 1 
+    - name: Create the .conf file to load the modules at bootup
+      file: 
+        path: "/etc/modules-load.d/crio.conf"
+        state: "touch"
+    - name: iptables config as specified by CRI-O documentation
+      blockinfile: 
+        path: "/etc/modules-load.d/crio.conf"
+        block: |
+              overlay
+              br_netfilter
+  
+    - name: modprobe
+      shell: |
+              sudo modprobe overlay
+              sudo modprobe br_netfilter
+    - name: Set system configurations for Kubernetes networking
+      file: 
+        path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+        state: "touch"
+    - name: Set up required sysctl params, these persist across reboots
+      blockinfile:
+        path: "/etc/sysctl.d/99-kubernetes-cri.conf"
+        block: |
+              net.bridge.bridge-nf-call-iptables = 1
+              net.ipv4.ip_forward = 1
+              net.bridge.bridge-nf-call-ip6tables = 1   
+    - name: Apply new settings
+      command: sudo sysctl --system
+    - name: Install CRI-O binaries 
+      shell: | 
+              OS=CentOS_8 && VERSION=1.23 
+              curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable.repo https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/$OS/devel:kubic:libcontainers:stable.repo
+              curl -L -o /etc/yum.repos.d/devel:kubic:libcontainers:stable:cri-o:$VERSION.repo https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable:cri-o:$VERSION/$OS/devel:kubic:libcontainers:stable:cri-o:$VERSION.repo
+              yum install cri-o -y 
+    - name: add kubernetes repo 
+      shell: | 
+              cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+              [kubernetes]
+              name=Kubernetes
+              baseurl=http://nexus.internal.taifco.net/repository/k8s/kubernetes-el7-\$basearch
+              enabled=1
+              gpgcheck=0
+              repo_gpgcheck=0
+              gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+              exclude=kubelet kubeadm kubectl
+              EOF
+    - name: disable selinux 
+      shell: | 
+              setenforce 0
+              sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+    - name: install kubernetes tools 
+      shell: |
+              yum update -y 
+              yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+              systemctl disable --now firewalld
+              rm -rf /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    - name: create a 10-kubeadm.conf 
+      file: 
+        path: "/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf"
+        state: "touch"
+    - name:  modifications the  kubelet servic
+      blockinfile:
+        path: "/usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf"
+        block: | 
+              # Note: This dropin only works with kubeadm and kubelet v1.11+
+              [Service]
+              Environment="KUBELET_KUBECONFIG_ARGS=--bootstrap-kubeconfig=/etc/kubernetes/bootstrap-kubelet.conf --kubeconfig=/etc/kubernetes/kubelet.conf"
+              Environment="KUBELET_CONFIG_ARGS=--config=/var/lib/kubelet/config.yaml"
+              # This is a file that "kubeadm init" and "kubeadm join" generates at runtime, populating the KUBELET_KUBEADM_ARGS variable dynamically
+              EnvironmentFile=-/var/lib/kubelet/kubeadm-flags.env
+              # This is a file that the user can use for overrides of the kubelet args as a last resort. Preferably, the user should use
+              # the .NodeRegistration.KubeletExtraArgs object in the configuration files instead. KUBELET_EXTRA_ARGS should be sourced from this file.
+              ## The following line to be added for CRI-O 
+              Environment="KUBELET_CGROUP_ARGS=--cgroup-driver=systemd"
+              EnvironmentFile=-/etc/sysconfig/kubelet
+              ExecStart=
+              ExecStart=/usr/bin/kubelet $KUBELET_KUBECONFIG_ARGS $KUBELET_CONFIG_ARGS $KUBELET_KUBEADM_ARGS $KUBELET_EXTRA_ARGS $KUBELET_CGROUP_ARGS
+    - name: update the systemd service  
+      shell: | 
+            systemctl daemon-reload
+            systemctl enable crio --now
+            systemctl enable kubelet --now

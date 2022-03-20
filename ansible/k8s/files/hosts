@@ -1,0 +1,10 @@
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+
+10.50.101.71  k8s-master-1
+10.50.101.72   k8s-master-2
+10.50.101.73   k8s-worker-1
+10.50.101.74   k8s-worker-2
+10.50.101.75   k8s-worker-3
+10.50.101.76   k8s-worker-4
+10.50.101.70  vip-k8s-master

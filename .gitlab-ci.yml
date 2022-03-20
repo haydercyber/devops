@@ -8,14 +8,11 @@ Deploy.restapi:
     - restapi
   before_script:
     - podman build -t restapi .
-    - podman tag localhost/restapi:latest haydercyber/devops:restapi
+    - podman tag localhost/restapi:latest haydercyber/devops:$CI_PIPELINE_IID
+    - podman push haydercyber/devops:$CI_PIPELINE_IID
   script:
-    - helm install demo helm
+    - helm upgrade --set deployment.image=haydercyber/devops:restapi  --set deployment.image=docker.io/haydercyber/devops:$CI_PIPELINE_IID demo helm
     - sleep 30s && cd 
   after_script:
     - curl -v restapi.helm.com/healthcheck
     - rm -rf /root/builds
-
-
-
-

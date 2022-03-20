@@ -1,0 +1,9 @@
+- name: remove old repo 
+  shell: rm -rf /etc/yum.repos.d/* 
+  tags: repos
+- name: copy all repo to the path 
+  copy:
+    remote_src: no 
+    src: repo/
+    dest: /etc/yum.repos.d/
+  tags: repos 
