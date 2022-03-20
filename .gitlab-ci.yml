@@ -1,0 +1,21 @@
+stages:
+  - deploy 
+Deploy.restapi: 
+  stage: deploy
+  only: 
+    - master
+  tags:
+    - restapi
+  before_script:
+    - podman build -t restapi .
+    - podman tag localhost/restapi:latest haydercyber/devops:restapi
+  script:
+    - helm install demo helm
+    - sleep 30s && cd 
+  after_script:
+    - curl -v restapi.helm.com/healthcheck
+    - rm -rf /root/builds
+
+
+
+

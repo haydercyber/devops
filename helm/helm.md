@@ -68,10 +68,7 @@ Provided Script Helm has a provided script that will install Helm locally in bas
 Manually The Helm binary can also be used to install Helm. 
 
 ```
-# curl -fsSL -o helm.tar.gz https://get.helm.sh/helm-v3.4.1-linux-amd64.tar.gz
-# tar -xzf helm.tar.gz
-# mv linux-amd64/helm /usr/local/bin/helm
-# ln -s /usr/local/bin/helm /usr/bin
+# curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 # helm version
 # helm repo add stable https://charts.helm.sh/stable
 # helm repo update

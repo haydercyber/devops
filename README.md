@@ -18,6 +18,12 @@ structure, multi-stage builds if needed, security practices for building/running
 containers.
 * [docker](docker/docker.md)
 
-> Create yaml manifest before creating the 
-
+> Create yaml manifest before creating the by creating the service and deployment and ingrees controal 
 * [k8s](k8s/k8s.md)
+
+> Create helm chart that content all yaml manifest template 
+* [helm](helm/helm.md)
+
+# Smoke test 
+> will create ci/cd with gitlab ci/cd i have s 
+

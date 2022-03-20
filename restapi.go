@@ -35,7 +35,7 @@ var httpRequestsTotal = prometheus.NewCounter(
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	httpRequestsTotal.Inc()
 	w.WriteHeader(http.StatusOK)
-	io.WriteString(w, "devops tasks")
+	io.WriteString(w, "Ok")
 }
 
 func GetPersonEndpoint(w http.ResponseWriter, req *http.Request) {
