@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployment.name }}
+  namespace: {{ .Values.deployment.namespace }}
+  labels:
+    app: {{ .Values.deployment.app }}
+spec:
+  replicas: {{ .Values.deployment.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.deployment.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.deployment.app }}
+    spec:
+      securityContext:
+        fsGroup: {{ .Values.deployment.fsGroup }}
+        runAsUser: {{ .Values.deployment.runAsUser }}
+      serviceAccountName: {{ .Values.deployment.serviceAccountName }}
+      nodeSelector:
+        app: {{ .Values.deployment.app }}
+      containers:
+      - name:  {{ .Values.deployment.name }}
+        image: {{  .Values.deployment.image }}
+        imagePullPolicy: {{.Values.deployment.imagePullPolicy }}
+        securityContext:
+          capabilities:
+            add:
+            - NET_RAW
+        resources:
+          {{- toYaml .Values.deployment.resources | nindent 12 }}
+        readinessProbe:
+          httpGet:
+            path: {{  .Values.deployment.readinessProbe.httpGet.path }}
+            port: {{  .Values.deployment.readinessProbe.httpGet.port }}
+          initialDelaySeconds: {{.Values.deployment.readinessProbe.httpGet.initialDelaySeconds }}
+          periodSeconds: {{  .Values.deployment.readinessProbe.httpGet.periodSeconds }}

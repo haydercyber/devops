@@ -1,0 +1,45 @@
+service: 
+  name: restapi-helm
+  namespace: helm
+  app: restapi
+  protocol: TCP
+  port: 9098
+  targetPort: 9098
+deployment: 
+  name: restapi-deployment-helm 
+  namespace: helm
+  app: restapi
+  replicas: 2
+  fsGroup: 65534
+  runAsUser: 65534
+  serviceAccountName: restapi-serviceaccount
+  image: haydercyber/devops:restapi
+  imagePullPolicy: Always
+  resources:
+    requests: 
+      memory: "64Mi"
+      cpu: "250m"
+    limits: 
+      memory: "128Mi"
+      cpu: "500m"
+  readinessProbe:
+    httpGet:
+      path: /healthcheck
+      port: 9098
+      initialDelaySeconds: 3
+      periodSeconds: 3
+ingress: 
+  name: ingress-helm
+  namespace: helm 
+  ingressClassName: nginx 
+  rules:
+  - host: "restapi.helm.com"
+    http:
+      paths:
+      - pathType: Prefix
+        path: "/"
+        backend:
+          service:
+            name: restapi-helm
+            port:
+              number: 9098
